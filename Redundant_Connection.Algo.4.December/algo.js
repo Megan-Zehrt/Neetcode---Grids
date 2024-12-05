@@ -58,3 +58,63 @@ function findRedundantConnection(edges){
 
     return []
 }
+
+function findRedundantConnection(edges) {
+        
+    const n = edges.length
+    const adj = Array.from({length : n + 1}, () => [])
+
+    for(let [u,v] of edges){
+
+        adj[u].push(v)
+        adj[v].push(u)
+    }
+
+    let visited = Array(n + 1).fill(false)
+    let cycle = new Set()
+    let cycleStart = -1
+
+    function dfs(node, parent){
+
+        if(visited[node]){
+            cycleStart = node
+            return true
+        }
+
+        visited[node] = true
+
+        for(let nei of adj[node]){
+
+            if(nei === parent){
+                continue
+            }
+
+            if(dfs(nei, node)){
+
+                if(cycleStart !== -1){
+                    cycle.add(node)
+                }
+
+                if(cycleStart === node){
+                    cycleStart = -1
+                }
+
+                return true
+            }
+        }
+
+        return false
+    }
+
+    dfs(1, -1)
+
+    for(let i = edges.length-1; i >= 0; i--){
+        let [u, v] = edges[i]
+
+        if(cycle.has(u) && cycle.has(v)){
+            return [u, v]
+        }
+    }
+
+    return []
+}
