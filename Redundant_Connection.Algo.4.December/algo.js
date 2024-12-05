@@ -169,3 +169,52 @@ function     findRedundantConnection(edges) {
 
     return []
 }
+
+
+function findRedundantConnection(edges){
+
+    const parent = new Array(edges.length + 1).fill(0).map((_, i) => i)
+    const rank = new Array(edges.length + 1).fill(1)
+
+    function find(node){
+
+        let p = parent[node]
+
+        while(p !== parent[p]){
+
+            parent[p] = parent[parent[p]]
+            p = parent[p]
+        }
+
+        return p
+    }
+
+    function union(node1, node2){
+
+        let root1 = find(node1)
+        let root2 = find(node2)
+
+        if(root1 === root2){
+            return false
+        }
+
+        if(rank[root1] > rank[root2]){
+            parent[root2] = root1
+            rank[root1] += rank[root2]
+        } else{
+            parent[root1] = root2
+            rank[root2] += rank[root1]
+        }
+
+        return true
+    }
+
+    for(let [n1, n2] of edges){
+
+        if(!union(n1, n2)){
+            return [n1, n2]
+        }
+    }
+
+    return []
+}
